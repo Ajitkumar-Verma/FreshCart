@@ -24,11 +24,15 @@ if (string.IsNullOrWhiteSpace(jwtSettings.Issuer) || string.IsNullOrWhiteSpace(j
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<BootstrapOptions>(builder.Configuration.GetSection(BootstrapOptions.SectionName));
+
 builder.Services.AddFreshCartServices();
+
 var connectionString = builder.Configuration.GetConnectionString("FreshCart")
     ?? throw new InvalidOperationException(ConfigurationErrorMessages.DatabaseConnectionMissing);
+
 builder.Services.AddFreshCartRepositories(connectionString);
 builder.Services.AddSingleton<IErrorLocalizer, ErrorLocalizer>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
