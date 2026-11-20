@@ -2,7 +2,7 @@
 (
     Id                               UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_Categories_Id DEFAULT (NEWSEQUENTIALID()),
     InternalId                       BIGINT IDENTITY(1,1) NOT NULL,
-    ParentCategoryIdUNIQUEIDENTIFIER NULL,
+    ParentCategoryId                 UNIQUEIDENTIFIER NULL,
     Name                             nvarchar(100) NOT NULL,
     Slug                             nvarchar(120) NOT NULL UNIQUE,
     IsActive                         bit NOT NULL DEFAULT 1,

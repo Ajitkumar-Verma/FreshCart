@@ -3,7 +3,7 @@
     Id                               UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_OrderItems_Id DEFAULT (NEWSEQUENTIALID()),
     InternalId                       BIGINT IDENTITY(1,1) NOT NULL,
     ShopOrderId                      UNIQUEIDENTIFIER NOT NULL,
-    ProductVariantIdUNIQUEIDENTIFIER NULL,
+    ProductVariantId                 UNIQUEIDENTIFIER NULL,
     ProductName                      nvarchar(180) NOT NULL,
     UnitName                         nvarchar(40) NOT NULL,
     Quantity                         decimal(10,3) NOT NULL,

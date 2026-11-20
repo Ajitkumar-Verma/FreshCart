@@ -2,7 +2,7 @@
 (
     Id                               UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_ProductPriceHistory_Id DEFAULT (NEWSEQUENTIALID()),
     InternalId                       BIGINT IDENTITY(1,1) NOT NULL,
-    ProductVariantIdUNIQUEIDENTIFIER NOT NULL,
+    ProductVariantId                 UNIQUEIDENTIFIER NOT NULL,
     OldPrice                         decimal(10,2) NULL,
     NewPrice                         decimal(10,2) NOT NULL,
     ChangedByUserId                  UNIQUEIDENTIFIER NOT NULL,

@@ -3,7 +3,7 @@
     Id                               UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_Inventory_Id DEFAULT (NEWSEQUENTIALID()),
     InternalId                       BIGINT IDENTITY(1,1) NOT NULL,
     ShopBranchId                     UNIQUEIDENTIFIER NOT NULL,
-    ProductVariantIdUNIQUEIDENTIFIER NOT NULL,
+    ProductVariantId                 UNIQUEIDENTIFIER NOT NULL,
     QuantityOnHand                   decimal(12,3) NOT NULL DEFAULT 0,
     ReorderLevel                     decimal(12,3) NOT NULL DEFAULT 0,
     UNIQUE(ShopBranchId, ProductVariantId),

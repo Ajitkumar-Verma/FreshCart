@@ -3,7 +3,7 @@
     Id                               UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_CartItems_Id DEFAULT (NEWSEQUENTIALID()),
     InternalId                       BIGINT IDENTITY(1,1) NOT NULL,
     CartId                           UNIQUEIDENTIFIER NOT NULL,
-    ProductVariantIdUNIQUEIDENTIFIER NOT NULL,
+    ProductVariantId                 UNIQUEIDENTIFIER NOT NULL,
     Quantity                         decimal(10,3) NOT NULL,
     UNIQUE(CartId, ProductVariantId),
     CHECK(Quantity > 0),
