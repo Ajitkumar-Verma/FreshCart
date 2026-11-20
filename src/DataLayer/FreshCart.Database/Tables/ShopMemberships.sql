@@ -1,0 +1,26 @@
+﻿CREATE TABLE dbo.ShopMemberships
+(
+    Id          UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_ShopMemberships_Id DEFAULT (NEWSEQUENTIALID()),
+    InternalId  BIGINT IDENTITY(1,1) NOT NULL,
+    ShopId      UNIQUEIDENTIFIER NOT NULL,
+    UserId      UNIQUEIDENTIFIER NOT NULL,
+    RoleName    nvarchar(40) NOT NULL,
+    IsActive    bit NOT NULL DEFAULT 1,
+    UNIQUE(ShopId, UserId),
+    CreatedBy   UNIQUEIDENTIFIER NULL,
+    CreatedOn   DATETIME2(7) NOT NULL CONSTRAINT DF_ShopMemberships_CreatedOn DEFAULT (SYSUTCDATETIME()),
+    CreatedDate DATE NOT NULL CONSTRAINT DF_ShopMemberships_CreatedDate DEFAULT (CONVERT(date, SYSUTCDATETIME())),
+    UpdatedBy   UNIQUEIDENTIFIER NULL,
+    UpdatedOn   DATETIME2(7) NULL,
+    IsDeleted   BIT NOT NULL CONSTRAINT DF_ShopMemberships_IsDeleted DEFAULT (0),
+    DeletedBy   UNIQUEIDENTIFIER NULL,
+    DeletedAt   DATETIME2(7) NULL,
+    CONSTRAINT PK_ShopMemberships PRIMARY KEY NONCLUSTERED (Id),
+    CONSTRAINT UQ_ShopMemberships_InternalId UNIQUE CLUSTERED (InternalId),
+    CONSTRAINT FK_ShopMemberships_Shops_ShopId FOREIGN KEY (ShopId) REFERENCES dbo.Shops(Id),
+    CONSTRAINT FK_ShopMemberships_AspNetUsers_UserId FOREIGN KEY (UserId) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_ShopMemberships_AspNetUsers_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_ShopMemberships_AspNetUsers_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_ShopMemberships_AspNetUsers_DeletedBy FOREIGN KEY (DeletedBy) REFERENCES dbo.AspNetUsers(Id)
+);
+

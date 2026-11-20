@@ -1,0 +1,16 @@
+﻿namespace FreshCart.Repository;
+
+/// <summary>Canonical names for SQL Server stored procedures called by repositories.</summary>
+public static class StoredProcedure
+{
+    public static class Catalog
+    {
+        public const string ProductGetAvailable = "dbo.Product_GetAvailable";
+        public const string ProductGetById = "dbo.Product_GetById";
+    }
+
+    public static class Inventory
+    {
+        public const string Adjust = "dbo.Inventory_Adjust";
+    }
+}

@@ -10,7 +10,7 @@ FreshCart is organized as a React frontend, an ASP.NET Core Web API, shared cont
 FreshCart/
 ├── FreshCart.sln
 ├── frontend/                         React + Vite application
-├── database/                         Standalone SQL schema/seed draft
+├── database/                         Database source-of-truth pointer
 └── src/
     ├── FreshCart.Api/                HTTP entry point and controllers
     ├── FreshCart.Common/             Shared model types
@@ -51,11 +51,11 @@ Contains repository contracts such as `IProductRepository`. The service layer de
 
 ### `FreshCart.Repository`
 
-Contains SQL Server data access. `ProductRepository` calls stored procedures with parameterized inputs and maps result rows to shared models. Keep SQL execution and row mapping here.
+Contains SQL Server data access. `ProductRepository` uses Dapper to call stored procedures with named parameters and map result rows to shared models. It does not contain inline SQL. Keep SQL execution and persistence mapping here.
 
 ### `FreshCart.Database`
 
-The SQL Server Database Project contains schema, stored procedures, roles, user-defined types, and post-deployment scripts. It uses SSDT (`.sqlproj`) and normally builds/deploys from Visual Studio with the SQL Server Data Tools workload installed.
+The SQL Server Database Project contains schema, stored procedures, roles, user-defined types, and post-deployment scripts. Stored procedure names used by repositories are centralized in `src/DataLayer/FreshCart.Repository/StoredProcedure.cs`. It uses SSDT (`.sqlproj`) and normally builds/deploys from Visual Studio with the SQL Server Data Tools workload installed.
 
 ### `frontend`
 
@@ -89,13 +89,13 @@ For local development, update the connection string for the SQL Server instance 
 
 `src/DataLayer/FreshCart.Database` currently contains:
 
-- `Tables/Marketplace.sql` — marketplace tables and indexes.
-- `Stored Procedures/Catalog.sql` — catalog read procedures and inventory adjustment procedure.
+- `Tables/` — one table definition per table-named SQL file, with its indexes in the same file.
+- `Stored Procedures/` — one stored procedure per procedure-named SQL file.
 - `Security/Roles.sql` — database role/security setup.
 - `UserDefinedTypes/OrderItemInput.sql` — table-valued type for order-item input.
 - `Scripts/Script.PostDeployment.sql` — post-deployment seed script.
 
-There is also a standalone `database/001-schema-and-seed.sql` draft at the repository root. Before deploying, decide which source is authoritative and keep the schema in one canonical location to avoid drift.
+`database/README.md` points to the SSDT project as the schema source of truth.
 
 ## 6. How to add another API feature
 
@@ -134,3 +134,33 @@ dotnet run --project src/FreshCart.Api/FreshCart.Api.csproj
 ```
 
 Swagger is enabled in the Development environment. The React app uses Vite; install Node.js and npm, then run `npm install` and `npm run dev` from `frontend/`.
+
+## 9. Repository SQL conventions
+
+Repositories use Dapper with CommandType.StoredProcedure. Keep procedure names in StoredProcedure.cs, add or update procedure definitions in the SSDT database project, and pass inputs as Dapper parameter objects. Do not place inline SQL statements in repository classes. Shared API/domain models remain in FreshCart.Common; don't create a second set of database-only DTOs unless a concrete mapping need arises.
+
+
+## 10. Shared infrastructure in `FreshCart.Common`
+
+The Common project now contains reusable, provider-neutral building blocks:
+
+- `Configuration/DatabaseOptions.cs` — typed holder for the database connection string.
+- `Persistence/IUnitOfWork.cs` and `IDbConnectionFactory.cs` — connection/transaction contracts shared by repository implementations.
+- `Persistence/IIdGenerator.cs` and `GuidIdGenerator.cs` — creates GUIDs before inserts so a parent and related child records can share the same identifier.
+- `Exceptions/ApplicationExceptions.cs` — application exception types for validation, unauthorized access, forbidden access, missing resources, and conflicts.
+- `Contracts/ApiErrorResponse.cs` — stable error response shape.
+- `Localization/` and `Resources/Errors.en.json`, `Errors.fr.json` — English/French error messages.
+- `Validation/Guard.cs` — reusable null, blank, positive, non-negative, non-empty-GUID, true, and false checks.
+
+The API exception middleware translates known application exceptions into a safe JSON error response. Unexpected exceptions are logged with a trace ID and return a generic localized 500 response; system exception details are not exposed to clients.
+
+The concrete SQL Server connection factory and `UnitOfWork` are in `FreshCart.Repository`. Repositories receive the scoped `IUnitOfWork`, so multiple repositories resolved in one request can share its connection and active transaction. Use `BeginTransactionAsync`, pass `Transaction` into Dapper commands, then call `SaveChangesAsync`/`CommitAsync`; call `RollbackAsync` on failure. Disposing an uncommitted unit of work rolls back its active transaction.
+
+A GUID and a unit of work solve different problems: the GUID identifies a new row, while the unit of work makes several writes atomic. The current marketplace SQL tables mostly use integer identity keys. `GuidIdGenerator` is available for new GUID-keyed entities, but changing existing tables to GUID keys requires a deliberate schema migration and matching stored procedure/repository changes.
+
+For method/interface conventions and feature-addition rules, see [ARCHITECTURE_RULES.md](ARCHITECTURE_RULES.md).
+
+
+
+
+All persisted tables now use GUID `Id` primary keys and `InternalId` identity alternate keys. Business tables include create/update audit metadata and soft-delete metadata. Foreign keys reference target GUID `Id` columns. The ASP.NET Identity schema therefore expects GUID-based Identity types in the eventual authentication implementation.

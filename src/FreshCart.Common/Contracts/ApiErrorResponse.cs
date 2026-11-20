@@ -1,0 +1,3 @@
+﻿namespace FreshCart.Common.Contracts;
+
+public sealed record ApiErrorResponse(string Code, string Message, string? TraceId, string? Path);

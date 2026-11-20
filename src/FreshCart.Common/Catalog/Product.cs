@@ -1,3 +1,3 @@
-namespace FreshCart.Common.Catalog;
+﻿namespace FreshCart.Common.Catalog;
 
-public sealed record Product(int ProductId, int ShopId, int CategoryId, string Name, string? Description, decimal Price, string CurrencyCode, bool IsAvailable);
+public sealed record Product(Guid ProductId, Guid ShopId, Guid CategoryId, string Name, string? Description, decimal Price, string CurrencyCode, bool IsAvailable);

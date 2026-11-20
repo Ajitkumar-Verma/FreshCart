@@ -1,66 +1,30 @@
-using System.Data;
-using System.Data.Common;
-using Microsoft.Data.SqlClient;
+﻿using Dapper;
 using FreshCart.Common.Catalog;
+using FreshCart.Common.Persistence;
 using FreshCart.IRepository.Catalog;
+using System.Data;
 
 namespace FreshCart.Repository.Catalog;
 
-/// <summary>SQL Server implementation of the catalog repository.</summary>
-public sealed class ProductRepository : IProductRepository
+/// <summary>SQL Server implementation using Dapper and stored procedures only.</summary>
+public sealed class ProductRepository(IUnitOfWork unitOfWork) : IProductRepository
 {
-    private readonly string _connectionString;
-
-    public ProductRepository(string connectionString)
+    public async Task<IReadOnlyList<Product>> GetAvailableAsync(Guid? shopId = null, Guid? categoryId = null, string? search = null, CancellationToken cancellationToken = default)
     {
-        _connectionString = string.IsNullOrWhiteSpace(connectionString) ? throw new ArgumentException("A database connection string is required.", nameof(connectionString)) : connectionString;
+        var connection = await unitOfWork.GetConnectionAsync(cancellationToken);
+        var command = new CommandDefinition(StoredProcedure.Catalog.ProductGetAvailable,
+            new { ShopId = shopId, CategoryId = categoryId, Search = string.IsNullOrWhiteSpace(search) ? null : search.Trim() },
+            transaction: unitOfWork.Transaction, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
+        return (await connection.QueryAsync<Product>(command)).AsList();
     }
 
-    public async Task<IReadOnlyList<Product>> GetAvailableAsync(int? shopId = null, int? categoryId = null, string? search = null, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        const string sql = "dbo.Product_GetAvailable";
-        await using var connection = CreateConnection();
-        await connection.OpenAsync(cancellationToken);
-        await using var command = connection.CreateCommand();
-        command.CommandText = sql;
-        command.CommandType = CommandType.StoredProcedure;
-        AddParameter(command, "@ShopId", shopId, DbType.Int32);
-        AddParameter(command, "@CategoryId", categoryId, DbType.Int32);
-        AddParameter(command, "@Search", string.IsNullOrWhiteSpace(search) ? null : search.Trim(), DbType.String);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        var products = new List<Product>();
-        while (await reader.ReadAsync(cancellationToken)) products.Add(ReadProduct(reader));
-        return products;
+        var connection = await unitOfWork.GetConnectionAsync(cancellationToken);
+        var command = new CommandDefinition(StoredProcedure.Catalog.ProductGetById,
+            new { ProductId = productId }, transaction: unitOfWork.Transaction,
+            commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
+        return await connection.QuerySingleOrDefaultAsync<Product>(command);
     }
-
-    public async Task<Product?> GetByIdAsync(int productId, CancellationToken cancellationToken = default)
-    {
-        const string sql = "dbo.Product_GetById";
-        await using var connection = CreateConnection();
-        await connection.OpenAsync(cancellationToken);
-        await using var command = connection.CreateCommand();
-        command.CommandText = sql;
-        command.CommandType = CommandType.StoredProcedure;
-        AddParameter(command, "@ProductId", productId, DbType.Int32);
-        await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken);
-        return await reader.ReadAsync(cancellationToken) ? ReadProduct(reader) : null;
-    }
-
-    private DbConnection CreateConnection()
-    {
-        return new SqlConnection(_connectionString);
-    }
-
-    private static void AddParameter(DbCommand command, string name, object? value, DbType type)
-    {
-        var parameter = command.CreateParameter();
-        parameter.ParameterName = name;
-        parameter.DbType = type;
-        parameter.Value = value ?? DBNull.Value;
-        command.Parameters.Add(parameter);
-    }
-
-    private static Product ReadProduct(DbDataReader reader) => new(
-        reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetString(3),
-        reader.IsDBNull(4) ? null : reader.GetString(4), reader.GetDecimal(5), reader.GetString(6), reader.GetBoolean(7));
 }
+

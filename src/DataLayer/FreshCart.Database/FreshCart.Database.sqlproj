@@ -56,15 +56,51 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="Tables\" />
     <Folder Include="Stored Procedures\" />
     <Folder Include="Security\" />
     <Folder Include="UserDefinedTypes\" />
     <Folder Include="Scripts\" />
+    <Folder Include="Tables\" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Marketplace.sql" />
-    <Build Include="Stored Procedures\Catalog.sql" />
+    <Build Include="Tables\Addresses.sql" />
+    <Build Include="Tables\AspNetRoleClaims.sql" />
+    <Build Include="Tables\AspNetRoles.sql" />
+    <Build Include="Tables\AspNetUserClaims.sql" />
+    <Build Include="Tables\AspNetUserLogins.sql" />
+    <Build Include="Tables\AspNetUserRoles.sql" />
+    <Build Include="Tables\AspNetUsers.sql" />
+    <Build Include="Tables\AspNetUserTokens.sql" />
+    <Build Include="Tables\AuditLogs.sql" />
+    <Build Include="Tables\CartItems.sql" />
+    <Build Include="Tables\Carts.sql" />
+    <Build Include="Tables\Categories.sql" />
+    <Build Include="Tables\Coupons.sql" />
+    <Build Include="Tables\CouponUsage.sql" />
+    <Build Include="Tables\DeliverySlots.sql" />
+    <Build Include="Tables\DeliveryZones.sql" />
+    <Build Include="Tables\Inventory.sql" />
+    <Build Include="Tables\Notifications.sql" />
+    <Build Include="Tables\OrderItems.sql" />
+    <Build Include="Tables\Orders.sql" />
+    <Build Include="Tables\OrderStatusHistory.sql" />
+    <Build Include="Tables\Payments.sql" />
+    <Build Include="Tables\ProductImages.sql" />
+    <Build Include="Tables\ProductPriceHistory.sql" />
+    <Build Include="Tables\Products.sql" />
+    <Build Include="Tables\ProductVariants.sql" />
+    <Build Include="Tables\Refunds.sql" />
+    <Build Include="Tables\Reviews.sql" />
+    <Build Include="Tables\ShopBranches.sql" />
+    <Build Include="Tables\ShopMemberships.sql" />
+    <Build Include="Tables\ShopOrders.sql" />
+    <Build Include="Tables\Shops.sql" />
+    <Build Include="Tables\StockMovements.sql" />
+    <Build Include="Tables\WishlistItems.sql" />
+    <Build Include="Tables\Wishlists.sql" />
+    <Build Include="Stored Procedures\Inventory_Adjust.sql" />
+    <Build Include="Stored Procedures\Product_GetAvailable.sql" />
+    <Build Include="Stored Procedures\Product_GetById.sql" />
     <Build Include="Security\Roles.sql" />
     <Build Include="UserDefinedTypes\OrderItemInput.sql" />
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

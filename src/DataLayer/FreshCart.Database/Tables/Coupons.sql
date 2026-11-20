@@ -1,0 +1,30 @@
+﻿CREATE TABLE dbo.Coupons
+(
+    Id            UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_Coupons_Id DEFAULT (NEWSEQUENTIALID()),
+    InternalId    BIGINT IDENTITY(1,1) NOT NULL,
+    ShopId        UNIQUEIDENTIFIER NULL,
+    Code          nvarchar(40) NOT NULL UNIQUE,
+    DiscountType  tinyint NOT NULL,
+    DiscountValue decimal(10,2) NOT NULL,
+    MinimumOrder  decimal(10,2) NOT NULL DEFAULT 0,
+    StartsAt      datetime2 NOT NULL,
+    EndsAt        datetime2 NOT NULL,
+    UsageLimit    int NULL,
+    IsActive      bit NOT NULL DEFAULT 1,
+    CHECK(EndsAt > StartsAt),
+    CreatedBy     UNIQUEIDENTIFIER NULL,
+    CreatedOn     DATETIME2(7) NOT NULL CONSTRAINT DF_Coupons_CreatedOn DEFAULT (SYSUTCDATETIME()),
+    CreatedDate   DATE NOT NULL CONSTRAINT DF_Coupons_CreatedDate DEFAULT (CONVERT(date, SYSUTCDATETIME())),
+    UpdatedBy     UNIQUEIDENTIFIER NULL,
+    UpdatedOn     DATETIME2(7) NULL,
+    IsDeleted     BIT NOT NULL CONSTRAINT DF_Coupons_IsDeleted DEFAULT (0),
+    DeletedBy     UNIQUEIDENTIFIER NULL,
+    DeletedAt     DATETIME2(7) NULL,
+    CONSTRAINT PK_Coupons PRIMARY KEY NONCLUSTERED (Id),
+    CONSTRAINT UQ_Coupons_InternalId UNIQUE CLUSTERED (InternalId),
+    CONSTRAINT FK_Coupons_Shops_ShopId FOREIGN KEY (ShopId) REFERENCES dbo.Shops(Id),
+    CONSTRAINT FK_Coupons_AspNetUsers_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_Coupons_AspNetUsers_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_Coupons_AspNetUsers_DeletedBy FOREIGN KEY (DeletedBy) REFERENCES dbo.AspNetUsers(Id)
+);
+

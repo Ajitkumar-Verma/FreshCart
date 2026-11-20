@@ -1,0 +1,27 @@
+﻿CREATE TABLE dbo.OrderStatusHistory
+(
+    Id              UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_OrderStatusHistory_Id DEFAULT (NEWSEQUENTIALID()),
+    InternalId      BIGINT IDENTITY(1,1) NOT NULL,
+    OrderId         UNIQUEIDENTIFIER NOT NULL,
+    ShopOrderId     UNIQUEIDENTIFIER NULL,
+    Status          tinyint NOT NULL,
+    Note            nvarchar(500) NULL,
+    ChangedByUserId UNIQUEIDENTIFIER NOT NULL,
+    CreatedBy       UNIQUEIDENTIFIER NULL,
+    CreatedOn       DATETIME2(7) NOT NULL CONSTRAINT DF_OrderStatusHistory_CreatedOn DEFAULT (SYSUTCDATETIME()),
+    CreatedDate     DATE NOT NULL CONSTRAINT DF_OrderStatusHistory_CreatedDate DEFAULT (CONVERT(date, SYSUTCDATETIME())),
+    UpdatedBy       UNIQUEIDENTIFIER NULL,
+    UpdatedOn       DATETIME2(7) NULL,
+    IsDeleted       BIT NOT NULL CONSTRAINT DF_OrderStatusHistory_IsDeleted DEFAULT (0),
+    DeletedBy       UNIQUEIDENTIFIER NULL,
+    DeletedAt       DATETIME2(7) NULL,
+    CONSTRAINT PK_OrderStatusHistory PRIMARY KEY NONCLUSTERED (Id),
+    CONSTRAINT UQ_OrderStatusHistory_InternalId UNIQUE CLUSTERED (InternalId),
+    CONSTRAINT FK_OrderStatusHistory_Orders_OrderId FOREIGN KEY (OrderId) REFERENCES dbo.Orders(Id),
+    CONSTRAINT FK_OrderStatusHistory_ShopOrders_ShopOrderId FOREIGN KEY (ShopOrderId) REFERENCES dbo.ShopOrders(Id),
+    CONSTRAINT FK_OrderStatusHistory_AspNetUsers_ChangedByUserId FOREIGN KEY (ChangedByUserId) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_OrderStatusHistory_AspNetUsers_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_OrderStatusHistory_AspNetUsers_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_OrderStatusHistory_AspNetUsers_DeletedBy FOREIGN KEY (DeletedBy) REFERENCES dbo.AspNetUsers(Id)
+);
+

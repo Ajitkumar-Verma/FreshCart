@@ -1,0 +1,30 @@
+﻿CREATE TABLE dbo.ProductVariants
+(
+    Id           UNIQUEIDENTIFIER NOT NULL CONSTRAINT DF_ProductVariants_Id DEFAULT (NEWSEQUENTIALID()),
+    InternalId   BIGINT IDENTITY(1,1) NOT NULL,
+    ProductId    UNIQUEIDENTIFIER NOT NULL,
+    SKU          nvarchar(80) NOT NULL UNIQUE,
+    UnitName     nvarchar(40) NOT NULL,
+    UnitQuantity decimal(10,3) NOT NULL,
+    UnitPrice    decimal(10,2) NOT NULL,
+    CurrencyCode char(3) NOT NULL DEFAULT 'INR',
+    IsDefault    bit NOT NULL DEFAULT 0,
+    IsActive     bit NOT NULL DEFAULT 1,
+    CONSTRAINT CK_ProductVariants_Price CHECK (UnitPrice >= 0),
+    CONSTRAINT CK_ProductVariants_Quantity CHECK (UnitQuantity > 0),
+    CreatedBy    UNIQUEIDENTIFIER NULL,
+    CreatedOn    DATETIME2(7) NOT NULL CONSTRAINT DF_ProductVariants_CreatedOn DEFAULT (SYSUTCDATETIME()),
+    CreatedDate  DATE NOT NULL CONSTRAINT DF_ProductVariants_CreatedDate DEFAULT (CONVERT(date, SYSUTCDATETIME())),
+    UpdatedBy    UNIQUEIDENTIFIER NULL,
+    UpdatedOn    DATETIME2(7) NULL,
+    IsDeleted    BIT NOT NULL CONSTRAINT DF_ProductVariants_IsDeleted DEFAULT (0),
+    DeletedBy    UNIQUEIDENTIFIER NULL,
+    DeletedAt    DATETIME2(7) NULL,
+    CONSTRAINT PK_ProductVariants PRIMARY KEY NONCLUSTERED (Id),
+    CONSTRAINT UQ_ProductVariants_InternalId UNIQUE CLUSTERED (InternalId),
+    CONSTRAINT FK_ProductVariants_Products_ProductId FOREIGN KEY (ProductId) REFERENCES dbo.Products(Id),
+    CONSTRAINT FK_ProductVariants_AspNetUsers_CreatedBy FOREIGN KEY (CreatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_ProductVariants_AspNetUsers_UpdatedBy FOREIGN KEY (UpdatedBy) REFERENCES dbo.AspNetUsers(Id),
+    CONSTRAINT FK_ProductVariants_AspNetUsers_DeletedBy FOREIGN KEY (DeletedBy) REFERENCES dbo.AspNetUsers(Id)
+);
+

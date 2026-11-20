@@ -1,0 +1,8 @@
+﻿{
+  "validation_error": "La requête contient des données invalides.",
+  "unauthorized": "Une authentification est requise.",
+  "forbidden": "Vous n’êtes pas autorisé à effectuer cette action.",
+  "not_found": "La ressource demandée est introuvable.",
+  "conflict": "La requête est en conflit avec l’état actuel de la ressource.",
+  "internal_error": "Une erreur inattendue s’est produite."
+}
