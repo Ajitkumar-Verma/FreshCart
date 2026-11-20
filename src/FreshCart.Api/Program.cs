@@ -1,4 +1,12 @@
+using FreshCart.Service;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddFreshCartServices();
+builder.Services.AddScoped<FreshCart.IRepository.Catalog.IProductRepository>(services =>
+    new FreshCart.Repository.Catalog.ProductRepository(
+        services.GetRequiredService<IConfiguration>().GetConnectionString("FreshCart")
+        ?? throw new InvalidOperationException("Connection string 'FreshCart' is missing.")));
 
 // Add services to the container.
 

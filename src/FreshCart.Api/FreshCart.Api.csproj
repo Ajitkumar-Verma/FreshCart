@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FreshCart.Common\FreshCart.Common.csproj" />
-    <ProjectReference Include="..\FreshCart.Service\FreshCart.Service.csproj" />
+    <ProjectReference Include="..\BusinessLayer\FreshCart.Service\FreshCart.Service.csproj" />
+    <ProjectReference Include="..\DataLayer\FreshCart.Repository\FreshCart.Repository.csproj" />
   </ItemGroup>
 
 </Project>
