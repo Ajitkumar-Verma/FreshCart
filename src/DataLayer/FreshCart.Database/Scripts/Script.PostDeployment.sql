@@ -1,2 +1,2 @@
-:r .\Scripts\001_SeedRoles.sql
-:r .\Scripts\002_GrantApplicationRolePermissions.sql
+:r .\001_SeedRoles.sql
+:r .\002_GrantApplicationRolePermissions.sql

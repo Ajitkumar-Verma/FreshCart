@@ -16,9 +16,20 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(builder.Configuration["Jwt:SigningKey"]))
+if (builder.Environment.IsDevelopment())
 {
-    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+    var localConfiguration = new ConfigurationBuilder()
+        .SetBasePath(builder.Environment.ContentRootPath)
+        .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false)
+        .Build();
+
+    foreach (var setting in localConfiguration.AsEnumerable())
+    {
+        if (setting.Value is not null && string.IsNullOrWhiteSpace(builder.Configuration[setting.Key]))
+        {
+            builder.Configuration[setting.Key] = setting.Value;
+        }
+    }
 }
 
 var jwtSettings = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()

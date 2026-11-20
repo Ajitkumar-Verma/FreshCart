@@ -23,7 +23,7 @@ The API project already has a User Secrets ID. In PowerShell from the repository
 dotnet user-secrets set "Bootstrap:SuperUserKey" "<long-random-one-time-bootstrap-secret>" --project src/FreshCart.Api/FreshCart.Api.csproj
 ```
 
-For this local checkout, an ignored `src/FreshCart.Api/appsettings.Local.json` is also loaded in Development only when `Jwt:SigningKey` is not already provided by User Secrets or another configuration source. The file is excluded from source control and publishing. New checkouts should create a key with the command above or add their own ignored local settings file.
+For this local checkout, an ignored `src/FreshCart.Api/appsettings.Local.json` provides Development-only fallback values for settings not already supplied by User Secrets or environment variables. The file is excluded from source control and publishing. New checkouts should create keys with the commands above or add their own ignored local settings file.
 
 Use secret management or environment variables in production. After the first PlatformAdmin is created through bootstrap, remove/rotate the bootstrap secret. The bootstrap endpoint becomes unavailable for creation once an active PlatformAdmin account exists. Apply request-rate limiting at the API or gateway before production use.
 
