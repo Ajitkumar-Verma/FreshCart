@@ -101,6 +101,10 @@
     <Build Include="Stored Procedures\Inventory_Adjust.sql" />
     <Build Include="Stored Procedures\Product_GetAvailable.sql" />
     <Build Include="Stored Procedures\Product_GetById.sql" />
+    <Build Include="Stored Procedures\Auth_UserCreate.sql" />
+    <Build Include="Stored Procedures\Auth_UserBootstrapPlatformAdmin.sql" />
+    <Build Include="Stored Procedures\Auth_UserGetByEmail.sql" />
+    <Build Include="Stored Procedures\Auth_UserGetRoles.sql" />
     <Build Include="Security\Roles.sql" />
     <Build Include="UserDefinedTypes\OrderItemInput.sql" />
     <PostDeploy Include="Scripts\Script.PostDeployment.sql" />

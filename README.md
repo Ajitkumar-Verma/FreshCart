@@ -13,3 +13,11 @@ Multi-shop fresh-produce marketplace starter using React, ASP.NET Core 8, and SQ
 This is a starter implementation. Payment gateway integration, full authentication flows, fulfillment, refunds, reviews, coupons, staff management, and complete CRUD remain to be implemented. Do not deploy publicly before those workflows and authorization policies are finished.
 
 .NET 8 reached end of support on November 10, 2026. The requested target is retained; upgrade to a supported release before production deployment.
+
+## Developer guides
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Architecture rules](docs/ARCHITECTURE_RULES.md)
+- [Authentication setup](docs/AUTHENTICATION.md)
+- [Multi-tenancy direction](docs/MULTITENANCY.md)
+

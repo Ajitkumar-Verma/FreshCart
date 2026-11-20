@@ -1,8 +1,10 @@
 ﻿using FreshCart.IService.Catalog;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FreshCart.Api.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("api/products")]
 public sealed class ProductsController(IProductService products) : ControllerBase
@@ -18,3 +20,4 @@ public sealed class ProductsController(IProductService products) : ControllerBas
         return product is null ? NotFound() : Ok(product);
     }
 }
+

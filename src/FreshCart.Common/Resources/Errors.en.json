@@ -4,5 +4,15 @@
   "forbidden": "You do not have permission to perform this action.",
   "not_found": "The requested resource was not found.",
   "conflict": "The request conflicts with the current resource state.",
-  "internal_error": "An unexpected error occurred."
+  "internal_error": "An unexpected error occurred.",
+  "email_required": "An email address is required.",
+  "display_name_required": "A display name is required.",
+  "password_too_short": "The password does not meet the minimum length.",
+  "account_exists": "An account with this email already exists.",
+  "invalid_credentials": "Email or password is incorrect.",
+  "bootstrap_key_invalid": "The bootstrap credential is invalid or not configured.",
+  "bootstrap_already_used": "A platform administrator is already configured.",
+  "shop_id_invalid": "Shop ID must not be an empty GUID.",
+  "category_id_invalid": "Category ID must not be an empty GUID.",
+  "product_id_invalid": "Product ID must not be an empty GUID."
 }

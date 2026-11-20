@@ -1,4 +1,5 @@
 ﻿using FreshCart.Common.Localization;
+using FreshCart.Common.Constants;
 using FreshCart.Common.Exceptions;
 using FreshCart.Common.Contracts;
 
@@ -22,8 +23,9 @@ public sealed class ApiExceptionMiddleware(RequestDelegate next, ILogger<ApiExce
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
             var language = context.Request.Headers["Accept-Language"].FirstOrDefault();
-            await context.Response.WriteAsJsonAsync(new ApiErrorResponse("internal_error", localizer.GetMessage("internal_error", language), context.TraceIdentifier, context.Request.Path), context.RequestAborted);
+            await context.Response.WriteAsJsonAsync(new ApiErrorResponse(AppErrorCodes.InternalError, localizer.GetMessage(AppErrorCodes.InternalError, language), context.TraceIdentifier, context.Request.Path), context.RequestAborted);
         }
     }
 }
+
 

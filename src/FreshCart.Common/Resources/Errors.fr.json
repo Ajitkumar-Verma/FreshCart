@@ -4,5 +4,15 @@
   "forbidden": "Vous n’êtes pas autorisé à effectuer cette action.",
   "not_found": "La ressource demandée est introuvable.",
   "conflict": "La requête est en conflit avec l’état actuel de la ressource.",
-  "internal_error": "Une erreur inattendue s’est produite."
+  "internal_error": "Une erreur inattendue s’est produite.",
+  "email_required": "Une adresse e-mail est requise.",
+  "display_name_required": "Un nom d’affichage est requis.",
+  "password_too_short": "Le mot de passe ne respecte pas la longueur minimale.",
+  "account_exists": "Un compte avec cette adresse e-mail existe déjà.",
+  "invalid_credentials": "L’adresse e-mail ou le mot de passe est incorrect.",
+  "bootstrap_key_invalid": "La clé d’initialisation est invalide ou non configurée.",
+  "bootstrap_already_used": "Un administrateur de plateforme est déjà configuré.",
+  "shop_id_invalid": "L’identifiant de la boutique ne peut pas être un GUID vide.",
+  "category_id_invalid": "L’identifiant de la catégorie ne peut pas être un GUID vide.",
+  "product_id_invalid": "L’identifiant du produit ne peut pas être un GUID vide."
 }

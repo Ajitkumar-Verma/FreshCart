@@ -7,14 +7,16 @@ Apply these rules whenever you add or change a feature. The goal is to keep cont
 1. **Add a public operation to its interface and implementation together.** Every new service operation belongs in `FreshCart.IService` and its implementation in `FreshCart.Service`. Every new persistence operation belongs in `FreshCart.IRepository` and its implementation in `FreshCart.Repository`.
 2. **Keep signatures aligned.** Method name, parameters, return type, nullability, and cancellation-token behavior must match between the interface and implementation.
 3. **Document each new interface method with a one-line XML summary.** The summary states what the method guarantees, including relevant conditions or outcomes. Keep implementation-only details in the concrete class.
-4. **Put business conditions in service logic, not controllers or repositories.** If a condition changes the public behavior of an operation, describe that behavior in the interface method summary and implement it in the service.
-5. **Controllers call service interfaces only.** They handle HTTP binding/status codes and delegate feature behavior; they do not contain database access or business rules.
-6. **Services call repository interfaces only.** They validate inputs, apply business rules, coordinate multiple repositories, and map results to shared contracts.
-7. **Repositories call stored procedures only.** Do not add inline SQL. Define procedure names in `src/DataLayer/FreshCart.Repository/StoredProcedure.cs`, define procedures in the SSDT database project, and pass input values as parameters.
-8. **Use the scoped unit of work for multi-repository writes.** Start one transaction, ensure all repositories use that scoped unit of work and pass its transaction to Dapper, then commit with `SaveChangesAsync`/`CommitAsync` or roll back on failure.
-9. **Use shared exception types.** Throw application exceptions from `FreshCart.Common.Exceptions`; do not return raw database/system exception messages to clients.
-10. **Keep one exception type per declaration, but group these related application exception declarations in `ApplicationExceptions.cs`.** Add a new app exception in that file and add its error code to both English and French catalogs.
-11. **Use shared guards and identifiers.** Prefer `FreshCart.Common.Validation.Guard` for common input checks. Generate GUIDs once before insert when the entity/schema uses GUID keys; do not change an existing integer-key schema without a coordinated migration.
+4. **Separate interface methods visually.** Leave one blank line between each method declaration, including its XML summary, so each contract operation is easy to scan.
+5. **Use shared constants for reusable values.** Put application roles, error codes, route segments, header names, claim names, and policy/configuration values in appropriately named classes under `FreshCart.Common.Constants`; reference those constants instead of repeating string or numeric literals across controllers, services, repositories, and middleware. Keep localized user-facing text in the English/French catalogs.
+6. **Put business conditions in service logic, not controllers or repositories.** If a condition changes the public behavior of an operation, describe that behavior in the interface method summary and implement it in the service.
+7. **Controllers call service interfaces only.** They handle HTTP binding/status codes and delegate feature behavior; they do not contain database access or business rules.
+8. **Services call repository interfaces only.** They validate inputs, apply business rules, coordinate multiple repositories, and map results to shared contracts.
+9. **Repositories call stored procedures only.** Do not add inline SQL. Define procedure names in `src/DataLayer/FreshCart.Repository/StoredProcedure.cs`, define procedures in the SSDT database project, and pass input values as parameters.
+10. **Use the scoped unit of work for multi-repository writes.** Start one transaction, ensure all repositories use that scoped unit of work and pass its transaction to Dapper, then commit with `SaveChangesAsync`/`CommitAsync` or roll back on failure.
+11. **Use shared exception types.** Throw application exceptions from `FreshCart.Common.Exceptions`; do not return raw database/system exception messages to clients.
+12. **Keep one exception type per declaration, but group these related application exception declarations in `ApplicationExceptions.cs`.** Add a new app exception in that file and add its error code to both English and French catalogs.
+13. **Use shared guards and identifiers.** Prefer `FreshCart.Common.Validation.Guard` for common input checks. Generate GUIDs once before insert when the entity/schema uses GUID keys; do not change an existing integer-key schema without a coordinated migration.
 
 ## Example: adding a service operation
 

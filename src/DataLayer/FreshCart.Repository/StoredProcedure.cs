@@ -9,8 +9,17 @@ public static class StoredProcedure
         public const string ProductGetById = "dbo.Product_GetById";
     }
 
+    public static class Auth
+    {
+        public const string UserGetByEmail = "dbo.Auth_UserGetByEmail";
+        public const string UserGetRoles = "dbo.Auth_UserGetRoles";
+        public const string UserCreate = "dbo.Auth_UserCreate";
+        public const string BootstrapPlatformAdmin = "dbo.Auth_UserBootstrapPlatformAdmin";
+    }
+
     public static class Inventory
     {
         public const string Adjust = "dbo.Inventory_Adjust";
     }
 }
+

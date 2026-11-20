@@ -164,3 +164,6 @@ For method/interface conventions and feature-addition rules, see [ARCHITECTURE_R
 
 
 All persisted tables now use GUID `Id` primary keys and `InternalId` identity alternate keys. Business tables include create/update audit metadata and soft-delete metadata. Foreign keys reference target GUID `Id` columns. The ASP.NET Identity schema therefore expects GUID-based Identity types in the eventual authentication implementation.
+
+Authentication setup and endpoint behavior are documented in [AUTHENTICATION.md](AUTHENTICATION.md). Multi-tenant isolation is not implemented yet; see [MULTITENANCY.md](MULTITENANCY.md) for the recommended design before onboarding independent vendors.
+

@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.Common;
 using FreshCart.Common.Persistence;
+using FreshCart.Common.Constants;
 
 namespace FreshCart.Repository.Persistence;
 
@@ -18,7 +19,7 @@ public sealed class UnitOfWork(IDbConnectionFactory connectionFactory) : IUnitOf
 
     public async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
     {
-        if (Transaction is not null) throw new InvalidOperationException("A unit-of-work transaction is already active.");
+        if (Transaction is not null) throw new InvalidOperationException(UnitOfWorkErrorMessages.TransactionAlreadyActive);
         var connection = await GetConnectionAsync(cancellationToken);
         Transaction = await connection.BeginTransactionAsync(isolationLevel, cancellationToken);
     }
@@ -32,7 +33,7 @@ public sealed class UnitOfWork(IDbConnectionFactory connectionFactory) : IUnitOf
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        if (Transaction is null) throw new InvalidOperationException("No active transaction to commit.");
+        if (Transaction is null) throw new InvalidOperationException(UnitOfWorkErrorMessages.NoTransactionToCommit);
         await Transaction.CommitAsync(cancellationToken);
         await Transaction.DisposeAsync();
         Transaction = null;
@@ -56,3 +57,4 @@ public sealed class UnitOfWork(IDbConnectionFactory connectionFactory) : IUnitOf
         if (_connection is not null) await _connection.DisposeAsync();
     }
 }
+
