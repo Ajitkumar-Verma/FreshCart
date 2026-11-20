@@ -5,6 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Errors.*.json" LogicalName="FreshCart.Common.Resources.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Resources\Errors.*.json" LogicalName="FreshCart.Common.Resources.%(Filename)%(Extension)" WithCulture="false" />
   </ItemGroup>
 </Project>

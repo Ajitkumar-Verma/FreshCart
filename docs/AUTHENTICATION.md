@@ -11,12 +11,19 @@ New API endpoints require authentication by default. Public endpoints must expli
 
 ## Local secrets
 
-The API project already has a User Secrets ID. From the repository root, set development-only secrets:
+The API project already has a User Secrets ID. In PowerShell from the repository root, generate and save a development-only signing key without placing it in source control:
 
 ```powershell
-dotnet user-secrets set "Jwt:SigningKey" "<at-least-32-random-bytes>" --project src/FreshCart.Api/FreshCart.Api.csproj
+ $jwtBytes = New-Object byte[] 64
+ $jwtRandomGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+ $jwtRandomGenerator.GetBytes($jwtBytes)
+ $jwtSigningKey = [Convert]::ToBase64String($jwtBytes)
+ dotnet user-secrets set "Jwt:SigningKey" $jwtSigningKey --project src/FreshCart.Api/FreshCart.Api.csproj
+ Remove-Variable jwtSigningKey, jwtBytes, jwtRandomGenerator
 dotnet user-secrets set "Bootstrap:SuperUserKey" "<long-random-one-time-bootstrap-secret>" --project src/FreshCart.Api/FreshCart.Api.csproj
 ```
+
+For this local checkout, an ignored `src/FreshCart.Api/appsettings.Local.json` is also loaded in Development only when `Jwt:SigningKey` is not already provided by User Secrets or another configuration source. The file is excluded from source control and publishing. New checkouts should create a key with the command above or add their own ignored local settings file.
 
 Use secret management or environment variables in production. After the first PlatformAdmin is created through bootstrap, remove/rotate the bootstrap secret. The bootstrap endpoint becomes unavailable for creation once an active PlatformAdmin account exists. Apply request-rate limiting at the API or gateway before production use.
 

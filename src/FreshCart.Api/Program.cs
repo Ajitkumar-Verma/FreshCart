@@ -16,11 +16,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment() && string.IsNullOrWhiteSpace(builder.Configuration["Jwt:SigningKey"]))
+{
+    builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: false);
+}
+
 var jwtSettings = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
     ?? throw new InvalidOperationException(ConfigurationErrorMessages.JwtSettingsMissing);
 if (string.IsNullOrWhiteSpace(jwtSettings.Issuer) || string.IsNullOrWhiteSpace(jwtSettings.Audience) ||
-    Encoding.UTF8.GetByteCount(jwtSettings.SigningKey) < 32 || jwtSettings.ExpirationMinutes is < 1 or > 1440)
+    jwtSettings.ExpirationMinutes is < 1 or > 1440)
     throw new InvalidOperationException(ConfigurationErrorMessages.JwtSettingsInvalid);
+if (Encoding.UTF8.GetByteCount(jwtSettings.SigningKey) < AuthPolicy.MinimumJwtSigningKeyBytes)
+    throw new InvalidOperationException(ConfigurationErrorMessages.JwtSigningKeyMissing);
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<BootstrapOptions>(builder.Configuration.GetSection(BootstrapOptions.SectionName));
@@ -89,6 +96,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+_ = app.Services.GetRequiredService<IErrorLocalizer>();
 app.UseMiddleware<ApiExceptionMiddleware>();
 if (app.Environment.IsDevelopment())
 {
