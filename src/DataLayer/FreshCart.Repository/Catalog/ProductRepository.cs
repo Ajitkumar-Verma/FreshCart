@@ -11,20 +11,42 @@ public sealed class ProductRepository(IUnitOfWork unitOfWork) : IProductReposito
 {
     public async Task<IReadOnlyList<Product>> GetAvailableAsync(Guid? shopId = null, Guid? categoryId = null, string? search = null, CancellationToken cancellationToken = default)
     {
-        var connection = await unitOfWork.GetConnectionAsync(cancellationToken);
-        var command = new CommandDefinition(StoredProcedure.Catalog.ProductGetAvailable,
-            new { ShopId = shopId, CategoryId = categoryId, Search = string.IsNullOrWhiteSpace(search) ? null : search.Trim() },
-            transaction: unitOfWork.Transaction, commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
-        return (await connection.QueryAsync<Product>(command)).AsList();
+        return await unitOfWork.WithConnectionAsync(
+            async (connection, transaction) =>
+            {
+                var command = new CommandDefinition(
+                    commandText: StoredProcedure.Catalog.ProductGetAvailable,
+                    parameters: new
+                    {
+                        ShopId = shopId,
+                        CategoryId = categoryId,
+                        Search = string.IsNullOrWhiteSpace(search) ? null : search.Trim()
+                    },
+                    transaction: transaction,
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: cancellationToken);
+                return (await connection.QueryAsync<Product>(command)).AsList();
+            },
+            cancellationToken: cancellationToken);
     }
 
     public async Task<Product?> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        var connection = await unitOfWork.GetConnectionAsync(cancellationToken);
-        var command = new CommandDefinition(StoredProcedure.Catalog.ProductGetById,
-            new { ProductId = productId }, transaction: unitOfWork.Transaction,
-            commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken);
-        return await connection.QuerySingleOrDefaultAsync<Product>(command);
+        return await unitOfWork.WithConnectionAsync(
+            (connection, transaction) =>
+            {
+                var command = new CommandDefinition(
+                    commandText: StoredProcedure.Catalog.ProductGetById,
+                    parameters: new
+                    {
+                        ProductId = productId
+                    },
+                    transaction: transaction,
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: cancellationToken);
+                return connection.QuerySingleOrDefaultAsync<Product>(command);
+            },
+            cancellationToken: cancellationToken);
     }
 }
 

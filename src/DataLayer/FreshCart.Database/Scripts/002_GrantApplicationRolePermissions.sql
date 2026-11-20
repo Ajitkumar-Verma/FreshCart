@@ -1,0 +1,5 @@
+GRANT SELECT, INSERT, UPDATE, EXECUTE ON SCHEMA::dbo TO [FreshCartApp];
+GO
+
+GRANT SELECT ON SCHEMA::dbo TO [FreshCartReadOnly];
+GO

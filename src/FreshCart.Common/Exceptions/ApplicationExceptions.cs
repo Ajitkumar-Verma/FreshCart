@@ -30,3 +30,6 @@ public sealed class NotFoundAppException(string errorCode = AppErrorCodes.NotFou
 
 /// <summary>Represents a conflict with the current state of a resource.</summary>
 public sealed class ConflictAppException(string errorCode = AppErrorCodes.Conflict) : AppException(errorCode, 409);
+
+/// <summary>Represents a required server-side application configuration that is missing.</summary>
+public sealed class ConfigurationAppException(string errorCode = AppErrorCodes.InternalError) : AppException(errorCode, 500);

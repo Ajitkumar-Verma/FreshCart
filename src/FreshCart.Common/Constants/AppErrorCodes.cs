@@ -15,6 +15,7 @@ public static class AppErrorCodes
     public const string InvalidCredentials = "invalid_credentials";
     public const string BootstrapKeyInvalid = "bootstrap_key_invalid";
     public const string BootstrapAlreadyUsed = "bootstrap_already_used";
+    public const string RoleNotConfigured = "role_not_configured";
     public const string ShopIdInvalid = "shop_id_invalid";
     public const string CategoryIdInvalid = "category_id_invalid";
     public const string ProductIdInvalid = "product_id_invalid";

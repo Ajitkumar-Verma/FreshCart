@@ -17,6 +17,20 @@ public sealed class UnitOfWork(IDbConnectionFactory connectionFactory) : IUnitOf
         return _connection;
     }
 
+    public async Task<TResult> WithConnectionAsync<TResult>(Func<DbConnection, DbTransaction?, Task<TResult>> operation, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        var connection = await GetConnectionAsync(cancellationToken);
+        return await operation(connection, Transaction);
+    }
+
+    public async Task WithConnectionAsync(Func<DbConnection, DbTransaction?, Task> operation, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        var connection = await GetConnectionAsync(cancellationToken);
+        await operation(connection, Transaction);
+    }
+
     public async Task BeginTransactionAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, CancellationToken cancellationToken = default)
     {
         if (Transaction is not null) throw new InvalidOperationException(UnitOfWorkErrorMessages.TransactionAlreadyActive);

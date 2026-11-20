@@ -13,13 +13,16 @@ public static class StoredProcedure
     {
         public const string UserGetByEmail = "dbo.Auth_UserGetByEmail";
         public const string UserGetRoles = "dbo.Auth_UserGetRoles";
+        public const string RoleGetByNormalizedName = "dbo.Auth_RoleGetByNormalizedName";
+        public const string UserHasActiveRole = "dbo.Auth_UserHasActiveRole";
         public const string UserCreate = "dbo.Auth_UserCreate";
-        public const string BootstrapPlatformAdmin = "dbo.Auth_UserBootstrapPlatformAdmin";
+        public const string UserRoleCreate = "dbo.Auth_UserRoleCreate";
     }
 
     public static class Inventory
     {
-        public const string Adjust = "dbo.Inventory_Adjust";
+        public const string UpdateQuantity = "dbo.Inventory_UpdateQuantity";
+        public const string CreateStockMovement = "dbo.StockMovement_Create";
     }
 }
 

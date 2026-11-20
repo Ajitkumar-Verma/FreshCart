@@ -6,6 +6,7 @@ using FreshCart.IRepository.Auth;
 using FreshCart.IService.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -16,15 +17,13 @@ public sealed class AuthService(
     IPasswordHasher<UserAccount> passwordHasher,
     IJwtTokenService tokenService,
     IOptions<BootstrapOptions> bootstrapOptions,
-    FreshCart.Common.Persistence.IIdGenerator idGenerator) : IAuthService
+    FreshCart.Common.Persistence.IIdGenerator idGenerator,
+    FreshCart.Common.Persistence.IUnitOfWork unitOfWork) : IAuthService
 {
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
     {
         var user = MakeUser(request.Email, request.DisplayName, request.PhoneNumber, request.Password);
-        var result = await users.CreateAsync(user, AppRoles.Customer, cancellationToken);
-        if (result.AlreadyExists) throw new ConflictAppException(AppErrorCodes.AccountExists);
-        var roles = await users.GetRolesAsync(result.UserId, cancellationToken);
-        return tokenService.CreateToken(user, roles);
+        return await CreateAccountAsync(user, AppRoles.Customer, false, cancellationToken);
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -39,9 +38,7 @@ public sealed class AuthService(
     public async Task<AuthResponse> CreatePlatformAdminAsync(CreateSuperUserRequest request, CancellationToken cancellationToken = default)
     {
         var user = MakeUser(request.Email, request.DisplayName, null, request.Password);
-        var result = await users.CreateAsync(user, AppRoles.PlatformAdmin, cancellationToken);
-        if (result.AlreadyExists) throw new ConflictAppException(AppErrorCodes.AccountExists);
-        return tokenService.CreateToken(user, new[] { AppRoles.PlatformAdmin });
+        return await CreateAccountAsync(user, AppRoles.PlatformAdmin, false, cancellationToken);
     }
 
     public async Task<AuthResponse> BootstrapPlatformAdminAsync(CreateSuperUserRequest request, string? suppliedKey, CancellationToken cancellationToken = default)
@@ -52,9 +49,38 @@ public sealed class AuthService(
             throw new ForbiddenAppException(AppErrorCodes.BootstrapKeyInvalid);
 
         var user = MakeUser(request.Email, request.DisplayName, null, request.Password);
-        var result = await users.BootstrapPlatformAdminAsync(user, cancellationToken);
-        if (result.AlreadyExists) throw new ConflictAppException(AppErrorCodes.BootstrapAlreadyUsed);
-        return tokenService.CreateToken(user, new[] { AppRoles.PlatformAdmin });
+        return await CreateAccountAsync(user, AppRoles.PlatformAdmin, true, cancellationToken);
+    }
+
+    private async Task<AuthResponse> CreateAccountAsync(UserAccount user, string roleName, bool requireFirstRoleAssignment, CancellationToken cancellationToken)
+    {
+        await unitOfWork.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
+        try
+        {
+            if (await users.GetByNormalizedEmailAsync(user.NormalizedEmail, cancellationToken) is not null)
+                throw new ConflictAppException(AppErrorCodes.AccountExists);
+
+            var normalizedRoleName = roleName.ToUpperInvariant();
+            var roleId = await users.GetRoleIdByNormalizedNameAsync(normalizedRoleName, cancellationToken);
+            if (roleId is null)
+                throw new ConfigurationAppException(AppErrorCodes.RoleNotConfigured);
+
+            if (requireFirstRoleAssignment && await users.HasActiveUserInRoleAsync(roleId.Value, cancellationToken))
+                throw new ConflictAppException(AppErrorCodes.BootstrapAlreadyUsed);
+
+            await users.CreateAsync(user, cancellationToken);
+
+            await users.AssignRoleAsync(user.Id, roleId.Value, cancellationToken);
+
+            var roles = await users.GetRolesAsync(user.Id, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            return tokenService.CreateToken(user, roles);
+        }
+        catch
+        {
+            await unitOfWork.RollbackAsync(CancellationToken.None);
+            throw;
+        }
     }
 
     private UserAccount MakeUser(string email, string displayName, string? phoneNumber, string password)
