@@ -4,10 +4,14 @@ using FreshCart.Common.Localization;
 using FreshCart.Repository;
 using FreshCart.Service;
 using FreshCart.Api.Middleware;
+using FreshCart.Api.Constants;
+using FreshCart.Api.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +31,36 @@ builder.Services.AddFreshCartRepositories(connectionString);
 builder.Services.AddSingleton<IErrorLocalizer, ErrorLocalizer>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+    options.AddSecurityDefinition(SwaggerConstants.BearerSecurityScheme, new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = SwaggerConstants.AuthorizationHeader,
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = SwaggerConstants.HttpAuthorizationScheme,
+        BearerFormat = SwaggerConstants.JwtTokenFormat,
+        Description = "Enter a JWT access token. Swagger adds the Bearer prefix to requests."
+    });
+    options.OperationFilter<AuthorizeOperationFilter>();
+});
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var localizer = context.HttpContext.RequestServices.GetRequiredService<IErrorLocalizer>();
+        var language = context.HttpContext.Request.Headers[HttpHeaderNames.AcceptLanguage].FirstOrDefault();
+        var response = new FreshCart.Common.Contracts.ApiErrorResponse(
+            AppErrorCodes.Validation,
+            localizer.GetMessage(AppErrorCodes.Validation, language),
+            context.HttpContext.TraceIdentifier,
+            context.HttpContext.Request.Path);
+
+        return new BadRequestObjectResult(response);
+    };
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -62,7 +95,3 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-
-
-
-

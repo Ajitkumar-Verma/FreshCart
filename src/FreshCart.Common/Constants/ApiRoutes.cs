@@ -7,4 +7,6 @@ public static class ApiRoutes
     public const string AuthLogin = "login";
     public const string SuperUsers = "api/superusers";
     public const string BootstrapSuperUser = "bootstrap";
+    public const string Products = "api/products";
+    public const string ProductById = "{productId:guid}";
 }
