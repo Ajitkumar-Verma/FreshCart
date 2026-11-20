@@ -13,6 +13,9 @@
   "bootstrap_key_invalid": "The bootstrap credential is invalid or not configured.",
   "bootstrap_already_used": "A platform administrator is already configured.",
   "role_not_configured": "A required account role is not configured.",
+  "role_assignment_not_allowed": "The requested role cannot be assigned through user management.",
+  "cannot_delete_current_user": "You cannot deactivate your own account.",
+  "last_platform_admin": "The last active platform administrator cannot be deactivated.",
   "shop_id_invalid": "Shop ID must not be an empty GUID.",
   "category_id_invalid": "Category ID must not be an empty GUID.",
   "product_id_invalid": "Product ID must not be an empty GUID."

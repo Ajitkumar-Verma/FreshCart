@@ -1,0 +1,11 @@
+using FreshCart.Common.Constants;
+using System.ComponentModel.DataAnnotations;
+
+namespace FreshCart.Common.Auth;
+
+public sealed record CreateManagedUserRequest(
+    [Required, EmailAddress, MaxLength(256)] string Email,
+    [Required, MinLength(AuthPolicy.MinimumPasswordLength), MaxLength(AuthPolicy.MaximumPasswordLength)] string Password,
+    [Required, MaxLength(160)] string DisplayName,
+    [Phone, MaxLength(30)] string? PhoneNumber,
+    [MaxLength(256)] string? RoleName = null);

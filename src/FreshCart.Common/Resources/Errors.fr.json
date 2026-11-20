@@ -13,6 +13,9 @@
   "bootstrap_key_invalid": "La clé d’initialisation est invalide ou non configurée.",
   "bootstrap_already_used": "Un administrateur de plateforme est déjà configuré.",
   "role_not_configured": "Un rôle de compte requis n’est pas configuré.",
+  "role_assignment_not_allowed": "Le rôle demandé ne peut pas être attribué par la gestion des utilisateurs.",
+  "cannot_delete_current_user": "Vous ne pouvez pas désactiver votre propre compte.",
+  "last_platform_admin": "Le dernier administrateur actif de la plateforme ne peut pas être désactivé.",
   "shop_id_invalid": "L’identifiant de la boutique ne peut pas être un GUID vide.",
   "category_id_invalid": "L’identifiant de la catégorie ne peut pas être un GUID vide.",
   "product_id_invalid": "L’identifiant du produit ne peut pas être un GUID vide."

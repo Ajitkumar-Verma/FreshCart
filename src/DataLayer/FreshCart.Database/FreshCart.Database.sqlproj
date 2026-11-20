@@ -109,6 +109,12 @@
     <Build Include="Stored Procedures\Auth_UserGetByEmail.sql" />
     <Build Include="Stored Procedures\Auth_UserGetRoles.sql" />
     <Build Include="Stored Procedures\Auth_UserRoleCreate.sql" />
+    <Build Include="Stored Procedures\Auth_UserGetAll.sql" />
+    <Build Include="Stored Procedures\Auth_UserGetById.sql" />
+    <Build Include="Stored Procedures\Auth_UserGetRoleAssignments.sql" />
+    <Build Include="Stored Procedures\Auth_UserGetActiveRoleUserCount.sql" />
+    <Build Include="Stored Procedures\Auth_UserUpdate.sql" />
+    <Build Include="Stored Procedures\Auth_UserSoftDelete.sql" />
     <Build Include="Security\FreshCartApp.sql" />
     <Build Include="Security\FreshCartReadOnly.sql" />
     <Build Include="UserDefinedTypes\OrderItemInput.sql" />

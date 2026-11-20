@@ -16,6 +16,9 @@ public static class AppErrorCodes
     public const string BootstrapKeyInvalid = "bootstrap_key_invalid";
     public const string BootstrapAlreadyUsed = "bootstrap_already_used";
     public const string RoleNotConfigured = "role_not_configured";
+    public const string RoleAssignmentNotAllowed = "role_assignment_not_allowed";
+    public const string CannotDeleteCurrentUser = "cannot_delete_current_user";
+    public const string LastPlatformAdmin = "last_platform_admin";
     public const string ShopIdInvalid = "shop_id_invalid";
     public const string CategoryIdInvalid = "category_id_invalid";
     public const string ProductIdInvalid = "product_id_invalid";

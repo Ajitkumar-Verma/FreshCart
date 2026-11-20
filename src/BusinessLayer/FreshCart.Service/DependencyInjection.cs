@@ -15,6 +15,7 @@ public static class DependencyInjection
         // Business services are scoped so they share request-scoped repositories and unit of work.
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserManagementService, UserManagementService>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IPasswordHasher<UserAccount>, PasswordHasher<UserAccount>>();
         return services;
