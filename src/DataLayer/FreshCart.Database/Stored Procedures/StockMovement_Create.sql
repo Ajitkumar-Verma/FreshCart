@@ -1,4 +1,5 @@
 CREATE PROCEDURE dbo.StockMovement_Create
+    @Id UNIQUEIDENTIFIER,
     @InventoryId UNIQUEIDENTIFIER,
     @QuantityChange DECIMAL(12,3),
     @Reason NVARCHAR(40),
@@ -10,6 +11,7 @@ BEGIN
 
     INSERT dbo.StockMovements
     (
+        Id,
         InventoryId,
         QuantityChange,
         Reason,
@@ -18,6 +20,7 @@ BEGIN
     )
     VALUES
     (
+        @Id,
         @InventoryId,
         @QuantityChange,
         @Reason,

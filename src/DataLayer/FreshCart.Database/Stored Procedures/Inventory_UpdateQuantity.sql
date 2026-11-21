@@ -13,4 +13,6 @@ BEGIN
     WHERE Id = @InventoryId
       AND IsDeleted = 0
       AND QuantityOnHand + @QuantityChange >= 0;
+
+    SELECT CAST(CASE WHEN @@ROWCOUNT > 0 THEN 1 ELSE 0 END AS BIT);
 END;

@@ -1,0 +1,483 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FreshCart.Api</name>
+    </assembly>
+    <members>
+        <member name="T:FreshCart.Api.Controllers.AddressesController">
+            <summary>Manages delivery addresses for the authenticated customer.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.#ctor(FreshCart.IService.Shopping.IAddressService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.AddressesController})">
+            <summary>Manages delivery addresses for the authenticated customer.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.GetAll(System.Threading.CancellationToken)">
+            <summary>Lists addresses belonging to the authenticated user.</summary>
+            <param name="cancellationToken">Cancels the address query.</param>
+            <response code="200">Returns the user's delivery addresses.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="500">The server could not retrieve addresses.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.GetById(System.Guid,System.Threading.CancellationToken)">
+            <summary>Gets one delivery address belonging to the authenticated user.</summary>
+            <param name="addressId">GUID of the address.</param>
+            <param name="cancellationToken">Cancels the address query.</param>
+            <response code="200">Returns the address.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The address does not exist for this user.</response>
+            <response code="500">The server could not retrieve the address.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.Create(FreshCart.Common.Shopping.AddressRequest,System.Threading.CancellationToken)">
+            <summary>Creates a delivery address for the authenticated user.</summary>
+            <param name="request">Recipient and delivery location fields.</param>
+            <param name="cancellationToken">Cancels address creation.</param>
+            <response code="201">The address was created.</response>
+            <response code="400">The address fields are invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="500">The server could not create the address.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.Update(System.Guid,FreshCart.Common.Shopping.AddressRequest,System.Threading.CancellationToken)">
+            <summary>Updates an address belonging to the authenticated user.</summary>
+            <param name="addressId">GUID of the address to update.</param>
+            <param name="request">Updated recipient and delivery location fields.</param>
+            <param name="cancellationToken">Cancels address update.</param>
+            <response code="200">The address was updated.</response>
+            <response code="400">The address fields are invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The address does not exist for this user.</response>
+            <response code="500">The server could not update the address.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.SetDefault(System.Guid,System.Threading.CancellationToken)">
+            <summary>Sets one of the user's addresses as the default delivery address.</summary>
+            <param name="addressId">GUID of the address to make default.</param>
+            <param name="cancellationToken">Cancels the default selection.</param>
+            <response code="200">The default address was changed.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The address does not exist for this user.</response>
+            <response code="500">The server could not update the default address.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AddressesController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes an address belonging to the authenticated user.</summary>
+            <param name="addressId">GUID of the address to remove.</param>
+            <param name="cancellationToken">Cancels address deletion.</param>
+            <response code="200">The address was soft-deleted.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The address does not exist for this user.</response>
+            <response code="500">The server could not delete the address.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.AuthController">
+            <summary>Provides public registration and login endpoints.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AuthController.#ctor(FreshCart.IService.Auth.IAuthService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.AuthController})">
+            <summary>Provides public registration and login endpoints.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AuthController.Register(FreshCart.Common.Auth.RegisterRequest,System.Threading.CancellationToken)">
+            <summary>Registers a customer account and returns a JWT access token.</summary>
+            <param name="request">The email, password, display name, and optional phone number for the new account.</param>
+            <param name="cancellationToken">Cancels the registration request.</param>
+            <response code="200">The account was created and an access token was issued.</response>
+            <response code="400">The request fields failed validation.</response>
+            <response code="409">An account already uses this email address.</response>
+            <response code="500">The server could not complete registration.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.AuthController.Login(FreshCart.Common.Auth.LoginRequest,System.Threading.CancellationToken)">
+            <summary>Authenticates a customer and returns a JWT access token.</summary>
+            <param name="request">The email address and password to verify.</param>
+            <param name="cancellationToken">Cancels the login request.</param>
+            <response code="200">The credentials are valid and a token was issued.</response>
+            <response code="400">The request fields failed validation.</response>
+            <response code="401">The email or password is invalid.</response>
+            <response code="500">The server could not complete login.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.CartController">
+            <summary>Manages the authenticated customer's shopping cart.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CartController.#ctor(FreshCart.IService.Shopping.ICartService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.CartController})">
+            <summary>Manages the authenticated customer's shopping cart.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CartController.Get(System.Threading.CancellationToken)">
+            <summary>Returns the authenticated user's cart and current item totals.</summary>
+            <param name="cancellationToken">Cancels the cart query.</param>
+            <response code="200">Returns the user's cart.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="500">The server could not retrieve the cart.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CartController.AddItem(System.Guid,FreshCart.Common.Shopping.CartItemRequest,System.Threading.CancellationToken)">
+            <summary>Adds a quantity of a currently visible product variant to the cart.</summary>
+            <param name="productVariantId">GUID of the sellable product variant.</param>
+            <param name="request">The quantity to add.</param>
+            <param name="cancellationToken">Cancels the cart update.</param>
+            <response code="200">Returns the updated cart.</response>
+            <response code="400">The quantity or variant is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The product variant is not publicly available.</response>
+            <response code="500">The server could not update the cart.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CartController.UpdateItem(System.Guid,FreshCart.Common.Shopping.CartItemRequest,System.Threading.CancellationToken)">
+            <summary>Sets the quantity for one variant already in the cart.</summary>
+            <param name="productVariantId">GUID of the product variant.</param>
+            <param name="request">The replacement quantity.</param>
+            <param name="cancellationToken">Cancels the cart update.</param>
+            <response code="200">Returns the updated cart.</response>
+            <response code="400">The quantity is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The cart item does not exist.</response>
+            <response code="500">The server could not update the cart.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CartController.RemoveItem(System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes a product variant from the cart.</summary>
+            <param name="productVariantId">GUID of the product variant to remove.</param>
+            <param name="cancellationToken">Cancels the cart update.</param>
+            <response code="200">Returns the updated cart.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="404">The cart item does not exist.</response>
+            <response code="500">The server could not update the cart.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.CategoriesController">
+            <summary>Provides public category browsing and administrator category management.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CategoriesController.#ctor(FreshCart.IService.Catalog.ICategoryService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.CategoriesController})">
+            <summary>Provides public category browsing and administrator category management.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CategoriesController.GetAll(System.Threading.CancellationToken)">
+            <summary>Returns active categories in display order.</summary>
+            <param name="cancellationToken">Cancels the category query.</param>
+            <response code="200">Returns active categories.</response>
+            <response code="500">The server could not retrieve categories.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CategoriesController.GetById(System.Guid,System.Threading.CancellationToken)">
+            <summary>Returns one active category by identifier.</summary>
+            <param name="categoryId">GUID of the category to retrieve.</param>
+            <param name="cancellationToken">Cancels the category query.</param>
+            <response code="200">Returns the requested category.</response>
+            <response code="404">No active category has the supplied identifier.</response>
+            <response code="500">The server could not retrieve the category.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CategoriesController.Create(FreshCart.Common.Catalog.CategoryRequest,System.Threading.CancellationToken)">
+            <summary>Creates a category for the catalog.</summary>
+            <param name="request">The category name, slug, optional parent, visibility, and display order.</param>
+            <param name="cancellationToken">Cancels the category create request.</param>
+            <response code="201">The category was created.</response>
+            <response code="400">The category input or parent is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="409">The category slug is already in use.</response>
+            <response code="500">The server could not create the category.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CategoriesController.Update(System.Guid,FreshCart.Common.Catalog.CategoryRequest,System.Threading.CancellationToken)">
+            <summary>Updates an existing category.</summary>
+            <param name="categoryId">GUID of the category to update.</param>
+            <param name="request">The updated category fields.</param>
+            <param name="cancellationToken">Cancels the category update request.</param>
+            <response code="200">The category was updated.</response>
+            <response code="400">The category input or parent is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="404">The category does not exist.</response>
+            <response code="409">The category slug is already in use.</response>
+            <response code="500">The server could not update the category.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.CategoriesController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes a category without removing historical data.</summary>
+            <param name="categoryId">GUID of the category to deactivate.</param>
+            <param name="cancellationToken">Cancels the category delete request.</param>
+            <response code="200">The category was soft-deleted.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="404">The category does not exist.</response>
+            <response code="500">The server could not delete the category.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.ProductsController">
+            <summary>Returns products available to shoppers.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.#ctor(FreshCart.IService.Catalog.IProductService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.ProductsController})">
+            <summary>Returns products available to shoppers.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.GetAvailable(System.Nullable{System.Guid},System.Nullable{System.Guid},System.String,System.Threading.CancellationToken)">
+            <summary>Lists active products, optionally filtered by shop, category, and search text.</summary>
+            <param name="shopId">Optional shop GUID used to limit results.</param>
+            <param name="categoryId">Optional category GUID used to limit results.</param>
+            <param name="search">Optional text searched against product names and descriptions.</param>
+            <param name="cancellationToken">Cancels the catalog query.</param>
+            <response code="200">Returns the matching active products.</response>
+            <response code="400">A supplied filter is invalid.</response>
+            <response code="500">The server could not load the product catalog.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.GetById(System.Guid,System.Threading.CancellationToken)">
+            <summary>Returns one active product by its GUID.</summary>
+            <param name="productId">GUID of the requested product.</param>
+            <param name="cancellationToken">Cancels the catalog query.</param>
+            <response code="200">Returns the matching product.</response>
+            <response code="400">The product ID is invalid.</response>
+            <response code="404">No active product has the supplied ID.</response>
+            <response code="500">The server could not load the product.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.Create(FreshCart.Common.Catalog.ProductCreateRequest,System.Threading.CancellationToken)">
+            <summary>Creates a product with its initial sellable size and price.</summary>
+            <param name="request">Shop, category, product details, and initial variant fields.</param>
+            <param name="cancellationToken">Cancels product creation.</param>
+            <response code="201">The product and its initial variant were created.</response>
+            <response code="400">The product input is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the requested shop.</response>
+            <response code="404">The category or shop does not exist.</response>
+            <response code="500">The server could not create the product.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.GetManagedById(System.Guid,System.Threading.CancellationToken)">
+            <summary>Gets a product from its manager view, including products in pending shops.</summary>
+            <param name="productId">GUID of the product to retrieve.</param>
+            <param name="cancellationToken">Cancels the product query.</param>
+            <response code="200">Returns the product for its shop manager.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the product's shop.</response>
+            <response code="404">The product does not exist.</response>
+            <response code="500">The server could not retrieve the product.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.Update(System.Guid,FreshCart.Common.Catalog.ProductUpdateRequest,System.Threading.CancellationToken)">
+            <summary>Updates product name, category, description, and active state.</summary>
+            <param name="productId">GUID of the product to update.</param>
+            <param name="request">Updated product fields.</param>
+            <param name="cancellationToken">Cancels product update.</param>
+            <response code="200">The product was updated.</response>
+            <response code="400">The product input is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the product's shop.</response>
+            <response code="404">The product or category does not exist.</response>
+            <response code="500">The server could not update the product.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductsController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes a product from the active catalog.</summary>
+            <param name="productId">GUID of the product to deactivate.</param>
+            <param name="cancellationToken">Cancels product deletion.</param>
+            <response code="200">The product was soft-deleted.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the product's shop.</response>
+            <response code="404">The product does not exist.</response>
+            <response code="500">The server could not delete the product.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.ProductVariantsController">
+            <summary>Lists and manages the sellable size and price variants of products.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductVariantsController.#ctor(FreshCart.IService.Catalog.IProductService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.ProductVariantsController})">
+            <summary>Lists and manages the sellable size and price variants of products.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductVariantsController.GetAll(System.Guid,System.Threading.CancellationToken)">
+            <summary>Lists active variants for an approved product.</summary>
+            <param name="productId">GUID of the product.</param>
+            <param name="cancellationToken">Cancels the variant query.</param>
+            <response code="200">Returns active sale variants.</response>
+            <response code="404">The product is not available.</response>
+            <response code="500">The server could not retrieve variants.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductVariantsController.Create(System.Guid,FreshCart.Common.Catalog.ProductVariantRequest,System.Threading.CancellationToken)">
+            <summary>Adds a size and price option to a product.</summary>
+            <param name="productId">GUID of the product that receives the variant.</param>
+            <param name="request">SKU, sale unit, quantity, price, currency, and default selection.</param>
+            <param name="cancellationToken">Cancels variant creation.</param>
+            <response code="201">The variant was created.</response>
+            <response code="400">The variant fields are invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage this product's shop.</response>
+            <response code="404">The product does not exist.</response>
+            <response code="500">The server could not create the variant.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductVariantsController.GetById(System.Guid,System.Guid,System.Threading.CancellationToken)">
+            <summary>Gets a variant from the manager view for its parent product.</summary>
+            <param name="productId">GUID of the parent product.</param>
+            <param name="variantId">GUID of the variant.</param>
+            <param name="cancellationToken">Cancels the variant query.</param>
+            <response code="200">Returns the requested variant.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the product's shop.</response>
+            <response code="404">The product variant does not exist.</response>
+            <response code="500">The server could not retrieve the variant.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductVariantsController.Update(System.Guid,System.Guid,FreshCart.Common.Catalog.ProductVariantRequest,System.Threading.CancellationToken)">
+            <summary>Updates a product variant and records any price change.</summary>
+            <param name="productId">GUID of the parent product.</param>
+            <param name="variantId">GUID of the variant to update.</param>
+            <param name="request">Updated SKU, sale unit, quantity, price, currency, and active state.</param>
+            <param name="cancellationToken">Cancels the update request.</param>
+            <response code="200">The variant was updated.</response>
+            <response code="400">The variant fields are invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the product's shop.</response>
+            <response code="404">The product variant does not exist.</response>
+            <response code="409">The existing default variant cannot be unset without selecting a replacement.</response>
+            <response code="500">The server could not update the variant.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ProductVariantsController.Delete(System.Guid,System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes a non-default product variant.</summary>
+            <param name="productId">GUID of the parent product.</param>
+            <param name="variantId">GUID of the variant to remove.</param>
+            <param name="cancellationToken">Cancels the delete request.</param>
+            <response code="200">The variant was soft-deleted.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage the product's shop.</response>
+            <response code="404">The variant does not exist.</response>
+            <response code="409">The default variant cannot be deleted.</response>
+            <response code="500">The server could not delete the variant.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.ShopsController">
+            <summary>Provides storefront shop discovery and shop-owner administration.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.#ctor(FreshCart.IService.Marketplace.IShopService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.ShopsController})">
+            <summary>Provides storefront shop discovery and shop-owner administration.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.GetApproved(System.Threading.CancellationToken)">
+            <summary>Lists active approved shops.</summary>
+            <param name="cancellationToken">Cancels the shop query.</param>
+            <response code="200">Returns approved shops.</response>
+            <response code="500">The server could not retrieve shops.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.GetManaged(System.Threading.CancellationToken)">
+            <summary>Lists shops the authenticated user owns or manages.</summary>
+            <param name="cancellationToken">Cancels the shop query.</param>
+            <response code="200">Returns the user's managed shops.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="500">The server could not retrieve shops.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.GetById(System.Guid,System.Threading.CancellationToken)">
+            <summary>Gets a shop managed by the authenticated user.</summary>
+            <param name="shopId">GUID of the shop to retrieve.</param>
+            <param name="cancellationToken">Cancels the shop query.</param>
+            <response code="200">Returns the requested shop.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage this shop.</response>
+            <response code="404">The shop does not exist.</response>
+            <response code="500">The server could not retrieve the shop.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.Create(FreshCart.Common.Marketplace.ShopRequest,System.Threading.CancellationToken)">
+            <summary>Creates a shop that requires platform approval before appearing in storefronts.</summary>
+            <param name="request">Shop name, URL slug, and optional description.</param>
+            <param name="cancellationToken">Cancels shop creation.</param>
+            <response code="201">The shop was created in pending approval state.</response>
+            <response code="400">The request is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller is not permitted to create a shop.</response>
+            <response code="409">The shop slug is already in use.</response>
+            <response code="500">The server could not create the shop.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.Update(System.Guid,FreshCart.Common.Marketplace.ShopRequest,System.Threading.CancellationToken)">
+            <summary>Updates the profile of a shop managed by the authenticated user.</summary>
+            <param name="shopId">GUID of the shop to update.</param>
+            <param name="request">The updated shop fields.</param>
+            <param name="cancellationToken">Cancels shop update.</param>
+            <response code="200">The shop was updated.</response>
+            <response code="400">The request is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage this shop.</response>
+            <response code="404">The shop does not exist.</response>
+            <response code="409">The shop slug is already in use.</response>
+            <response code="500">The server could not update the shop.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.SetStatus(System.Guid,FreshCart.Common.Marketplace.ShopStatusRequest,System.Threading.CancellationToken)">
+            <summary>Approves, suspends, or returns a shop to pending approval.</summary>
+            <param name="shopId">GUID of the shop whose status is changing.</param>
+            <param name="request">The desired shop status.</param>
+            <param name="cancellationToken">Cancels the status update.</param>
+            <response code="200">The status was updated.</response>
+            <response code="400">The requested status is invalid.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="404">The shop does not exist.</response>
+            <response code="500">The server could not update the status.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.ShopsController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes a shop managed by the authenticated user.</summary>
+            <param name="shopId">GUID of the shop to deactivate.</param>
+            <param name="cancellationToken">Cancels the request.</param>
+            <response code="200">The shop was soft-deleted.</response>
+            <response code="401">Authentication is required.</response>
+            <response code="403">The caller cannot manage this shop.</response>
+            <response code="404">The shop does not exist.</response>
+            <response code="500">The server could not delete the shop.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.SuperUsersController">
+            <summary>Creates platform administrator accounts.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.SuperUsersController.#ctor(FreshCart.IService.Auth.IAuthService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.SuperUsersController})">
+            <summary>Creates platform administrator accounts.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.SuperUsersController.Create(FreshCart.Common.Auth.CreateSuperUserRequest,System.Threading.CancellationToken)">
+            <summary>Creates another platform administrator account.</summary>
+            <param name="request">The email, password, and display name for the new administrator.</param>
+            <param name="cancellationToken">Cancels the create request.</param>
+            <response code="200">The administrator was created and a token was issued.</response>
+            <response code="400">The request fields failed validation.</response>
+            <response code="401">The caller is not authenticated.</response>
+            <response code="403">The authenticated caller lacks the platform administrator role.</response>
+            <response code="409">The email address is already in use.</response>
+            <response code="500">The server could not complete the request.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.SuperUsersController.Bootstrap(FreshCart.Common.Auth.CreateSuperUserRequest,System.String,System.Threading.CancellationToken)">
+            <summary>Creates the initial platform administrator during deployment bootstrap.</summary>
+            <param name="request">The email, password, and display name for the initial administrator.</param>
+            <param name="bootstrapKey">The deployment bootstrap secret supplied in the configured request header.</param>
+            <param name="cancellationToken">Cancels the bootstrap request.</param>
+            <response code="200">The initial administrator was created and a token was issued.</response>
+            <response code="400">The request fields failed validation.</response>
+            <response code="403">The bootstrap key is missing, invalid, or not configured.</response>
+            <response code="409">Bootstrap has already been completed, or the email is in use.</response>
+            <response code="500">The server could not complete bootstrap.</response>
+        </member>
+        <member name="T:FreshCart.Api.Controllers.UsersController">
+            <summary>Manages user accounts for platform administrators.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.UsersController.#ctor(FreshCart.IService.Auth.IUserManagementService,FreshCart.Common.Localization.IErrorLocalizer,Microsoft.Extensions.Logging.ILogger{FreshCart.Api.Controllers.UsersController})">
+            <summary>Manages user accounts for platform administrators.</summary>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.UsersController.GetAll(System.Threading.CancellationToken)">
+            <summary>Lists active user accounts and their roles.</summary>
+            <param name="cancellationToken">Cancels the request.</param>
+            <response code="200">Returns the active user accounts.</response>
+            <response code="401">The caller is not authenticated.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="500">The server could not retrieve users.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.UsersController.GetById(System.Guid,System.Threading.CancellationToken)">
+            <summary>Gets one active user account.</summary>
+            <param name="userId">GUID of the account to retrieve.</param>
+            <param name="cancellationToken">Cancels the request.</param>
+            <response code="200">Returns the matching user.</response>
+            <response code="401">The caller is not authenticated.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="404">No active user has that identifier.</response>
+            <response code="500">The server could not retrieve the user.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.UsersController.Create(FreshCart.Common.Auth.CreateManagedUserRequest,System.Threading.CancellationToken)">
+            <summary>Creates a user account and assigns Customer by default.</summary>
+            <param name="request">Account fields and an optional allowed role.</param>
+            <param name="cancellationToken">Cancels the request.</param>
+            <response code="201">The account was created.</response>
+            <response code="400">The request is invalid or requests an unsupported role.</response>
+            <response code="401">The caller is not authenticated.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="409">The email address is already registered.</response>
+            <response code="500">The server could not create the user.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.UsersController.Update(System.Guid,FreshCart.Common.Auth.UpdateManagedUserRequest,System.Threading.CancellationToken)">
+            <summary>Updates a user's email, display name, and phone number.</summary>
+            <param name="userId">GUID of the account to update.</param>
+            <param name="request">The updated profile values.</param>
+            <param name="cancellationToken">Cancels the request.</param>
+            <response code="200">The account was updated.</response>
+            <response code="400">The request fields are invalid.</response>
+            <response code="401">The caller is not authenticated.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="404">No active user has that identifier.</response>
+            <response code="409">The email address is already registered.</response>
+            <response code="500">The server could not update the user.</response>
+        </member>
+        <member name="M:FreshCart.Api.Controllers.UsersController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Soft-deletes a user account.</summary>
+            <param name="userId">GUID of the account to deactivate.</param>
+            <param name="cancellationToken">Cancels the request.</param>
+            <response code="200">The account was soft-deleted.</response>
+            <response code="401">The caller is not authenticated.</response>
+            <response code="403">The caller is not a platform administrator.</response>
+            <response code="404">No active user has that identifier.</response>
+            <response code="409">The caller cannot delete their own account, or this is the last platform administrator.</response>
+            <response code="500">The server could not delete the user.</response>
+        </member>
+    </members>
+</doc>

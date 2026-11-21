@@ -8,10 +8,14 @@ BEGIN
 
     SELECT
         p.Id AS ProductId,
+        v.Id AS ProductVariantId,
         p.ShopId,
         p.CategoryId,
         p.Name,
         p.Description,
+        v.SKU,
+        v.UnitName,
+        v.UnitQuantity,
         v.UnitPrice AS Price,
         v.CurrencyCode,
         CAST(
@@ -26,6 +30,14 @@ BEGIN
             AS BIT
         ) AS IsAvailable
     FROM dbo.Products AS p
+    INNER JOIN dbo.Shops AS shop
+        ON shop.Id = p.ShopId
+       AND shop.Status = 1
+       AND shop.IsDeleted = 0
+    INNER JOIN dbo.Categories AS c
+        ON c.Id = p.CategoryId
+       AND c.IsActive = 1
+       AND c.IsDeleted = 0
     INNER JOIN dbo.ProductVariants AS v
         ON v.ProductId = p.Id
        AND v.IsDefault = 1
