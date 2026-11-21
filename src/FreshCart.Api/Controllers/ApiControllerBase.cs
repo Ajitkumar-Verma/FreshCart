@@ -20,9 +20,12 @@ public abstract class ApiControllerBase : ControllerBase
     protected IActionResult CreateErrorResponse(AppException exception)
     {
         var language = Request.Headers[HttpHeaderNames.AcceptLanguage].FirstOrDefault();
-        var response = new ApiErrorResponse(
+        var response = new ApiResponse<object?>(
+            exception.StatusCode,
+            false,
             exception.ErrorCode,
             _localizer.GetMessage(exception.ErrorCode, language),
+            null,
             HttpContext.TraceIdentifier,
             Request.Path);
 
@@ -33,12 +36,33 @@ public abstract class ApiControllerBase : ControllerBase
     {
         _logger.LogError(exception, "Unhandled controller error. TraceId: {TraceId}", HttpContext.TraceIdentifier);
         var language = Request.Headers[HttpHeaderNames.AcceptLanguage].FirstOrDefault();
-        var response = new ApiErrorResponse(
+        var response = new ApiResponse<object?>(
+            StatusCodes.Status500InternalServerError,
+            false,
             AppErrorCodes.InternalError,
             _localizer.GetMessage(AppErrorCodes.InternalError, language),
+            null,
             HttpContext.TraceIdentifier,
             Request.Path);
 
         return StatusCode(StatusCodes.Status500InternalServerError, response);
+    }
+
+    protected ObjectResult CreateSuccessResponse<T>(T data, int statusCode = StatusCodes.Status200OK)
+    {
+        return StatusCode(statusCode, CreateSuccessEnvelope(data, statusCode));
+    }
+
+    protected ApiResponse<T> CreateSuccessEnvelope<T>(T data, int statusCode = StatusCodes.Status200OK)
+    {
+        var language = Request.Headers[HttpHeaderNames.AcceptLanguage].FirstOrDefault();
+        return new ApiResponse<T>(
+            statusCode,
+            true,
+            null,
+            _localizer.GetMessage(AppErrorCodes.RequestSucceeded, language),
+            data,
+            HttpContext.TraceIdentifier,
+            Request.Path);
     }
 }

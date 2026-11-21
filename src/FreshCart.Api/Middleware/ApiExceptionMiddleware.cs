@@ -15,7 +15,7 @@ public sealed class ApiExceptionMiddleware(RequestDelegate next, ILogger<ApiExce
             context.Response.StatusCode = exception.StatusCode;
             context.Response.ContentType = "application/json";
             var language = context.Request.Headers["Accept-Language"].FirstOrDefault();
-            await context.Response.WriteAsJsonAsync(new ApiErrorResponse(exception.ErrorCode, localizer.GetMessage(exception.ErrorCode, language), context.TraceIdentifier, context.Request.Path), context.RequestAborted);
+            await context.Response.WriteAsJsonAsync(new ApiResponse<object?>(exception.StatusCode, false, exception.ErrorCode, localizer.GetMessage(exception.ErrorCode, language), null, context.TraceIdentifier, context.Request.Path), context.RequestAborted);
         }
         catch (Exception exception)
         {
@@ -23,7 +23,7 @@ public sealed class ApiExceptionMiddleware(RequestDelegate next, ILogger<ApiExce
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "application/json";
             var language = context.Request.Headers["Accept-Language"].FirstOrDefault();
-            await context.Response.WriteAsJsonAsync(new ApiErrorResponse(AppErrorCodes.InternalError, localizer.GetMessage(AppErrorCodes.InternalError, language), context.TraceIdentifier, context.Request.Path), context.RequestAborted);
+            await context.Response.WriteAsJsonAsync(new ApiResponse<object?>(StatusCodes.Status500InternalServerError, false, AppErrorCodes.InternalError, localizer.GetMessage(AppErrorCodes.InternalError, language), null, context.TraceIdentifier, context.Request.Path), context.RequestAborted);
         }
     }
 }

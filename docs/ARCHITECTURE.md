@@ -148,7 +148,7 @@ The Common project now contains reusable, provider-neutral building blocks:
 - `Persistence/IUnitOfWork.cs` and `IDbConnectionFactory.cs` — connection/transaction contracts shared by repository implementations.
 - `Persistence/IIdGenerator.cs` and `GuidIdGenerator.cs` — creates GUIDs before inserts so a parent and related child records can share the same identifier.
 - `Exceptions/ApplicationExceptions.cs` — application exception types for validation, unauthorized access, forbidden access, missing resources, and conflicts.
-- `Contracts/ApiErrorResponse.cs` — stable error response shape.
+- `Contracts/ApiResponse.cs` — shared response envelope with HTTP status, success flag, data, localized message, trace ID, and request path.
 - `Localization/` and `Resources/Errors.en.json`, `Errors.fr.json` — English/French error messages.
 - `Validation/Guard.cs` — reusable null, blank, positive, non-negative, non-empty-GUID, true, and false checks.
 

@@ -26,15 +26,15 @@ public sealed class UsersController(
     /// <response code="403">The caller is not a platform administrator.</response>
     /// <response code="500">The server could not retrieve users.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<ManagedUserResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<ManagedUserResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await users.GetAllAsync(cancellationToken));
+            return CreateSuccessResponse(await users.GetAllAsync(cancellationToken));
         }
         catch (OperationCanceledException) { throw; }
         catch (AppException exception) { return CreateErrorResponse(exception); }
@@ -50,16 +50,16 @@ public sealed class UsersController(
     /// <response code="404">No active user has that identifier.</response>
     /// <response code="500">The server could not retrieve the user.</response>
     [HttpGet(ApiRoutes.UserById)]
-    [ProducesResponseType(typeof(ManagedUserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<ManagedUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await users.GetByIdAsync(userId, cancellationToken));
+            return CreateSuccessResponse(await users.GetByIdAsync(userId, cancellationToken));
         }
         catch (OperationCanceledException) { throw; }
         catch (AppException exception) { return CreateErrorResponse(exception); }
@@ -76,18 +76,21 @@ public sealed class UsersController(
     /// <response code="409">The email address is already registered.</response>
     /// <response code="500">The server could not create the user.</response>
     [HttpPost]
-    [ProducesResponseType(typeof(ManagedUserResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<ManagedUserResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateManagedUserRequest request, CancellationToken cancellationToken)
     {
         try
         {
             var created = await users.CreateAsync(request, cancellationToken);
-            return CreatedAtAction(nameof(GetById), new { userId = created.Id }, created);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { userId = created.Id },
+                CreateSuccessEnvelope(created, StatusCodes.Status201Created));
         }
         catch (OperationCanceledException) { throw; }
         catch (AppException exception) { return CreateErrorResponse(exception); }
@@ -106,18 +109,18 @@ public sealed class UsersController(
     /// <response code="409">The email address is already registered.</response>
     /// <response code="500">The server could not update the user.</response>
     [HttpPut(ApiRoutes.UserById)]
-    [ProducesResponseType(typeof(ManagedUserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<ManagedUserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update([FromRoute] Guid userId, [FromBody] UpdateManagedUserRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await users.UpdateAsync(userId, request, GetActorId(), cancellationToken));
+            return CreateSuccessResponse(await users.UpdateAsync(userId, request, GetActorId(), cancellationToken));
         }
         catch (OperationCanceledException) { throw; }
         catch (AppException exception) { return CreateErrorResponse(exception); }
@@ -127,25 +130,25 @@ public sealed class UsersController(
     /// <summary>Soft-deletes a user account.</summary>
     /// <param name="userId">GUID of the account to deactivate.</param>
     /// <param name="cancellationToken">Cancels the request.</param>
-    /// <response code="204">The account was soft-deleted.</response>
+    /// <response code="200">The account was soft-deleted.</response>
     /// <response code="401">The caller is not authenticated.</response>
     /// <response code="403">The caller is not a platform administrator.</response>
     /// <response code="404">No active user has that identifier.</response>
     /// <response code="409">The caller cannot delete their own account, or this is the last platform administrator.</response>
     /// <response code="500">The server could not delete the user.</response>
     [HttpDelete(ApiRoutes.UserById)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<UserDeletionResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Delete([FromRoute] Guid userId, CancellationToken cancellationToken)
     {
         try
         {
             await users.DeleteAsync(userId, GetActorId(), cancellationToken);
-            return NoContent();
+            return CreateSuccessResponse(new UserDeletionResponse(userId, true));
         }
         catch (OperationCanceledException) { throw; }
         catch (AppException exception) { return CreateErrorResponse(exception); }

@@ -27,9 +27,9 @@ public sealed class ProductsController(
     /// <response code="400">A supplied filter is invalid.</response>
     /// <response code="500">The server could not load the product catalog.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<Product>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<Product>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAvailable(
         [FromQuery] Guid? shopId,
         [FromQuery] Guid? categoryId,
@@ -39,7 +39,7 @@ public sealed class ProductsController(
         try
         {
             var result = await products.GetAvailableAsync(shopId, categoryId, search, cancellationToken);
-            return Ok(result);
+            return CreateSuccessResponse(result);
         }
         catch (OperationCanceledException)
         {
@@ -63,16 +63,18 @@ public sealed class ProductsController(
     /// <response code="404">No active product has the supplied ID.</response>
     /// <response code="500">The server could not load the product.</response>
     [HttpGet(ApiRoutes.ProductById)]
-    [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<Product>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetById([FromRoute] Guid productId, CancellationToken cancellationToken)
     {
         try
         {
             var product = await products.GetByIdAsync(productId, cancellationToken);
-            return product is null ? NotFound() : Ok(product);
+            return product is null
+                ? throw new FreshCart.Common.Exceptions.NotFoundAppException()
+                : CreateSuccessResponse(product);
         }
         catch (OperationCanceledException)
         {

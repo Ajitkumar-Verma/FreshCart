@@ -18,5 +18,6 @@
   "last_platform_admin": "Le dernier administrateur actif de la plateforme ne peut pas être désactivé.",
   "shop_id_invalid": "L’identifiant de la boutique ne peut pas être un GUID vide.",
   "category_id_invalid": "L’identifiant de la catégorie ne peut pas être un GUID vide.",
-  "product_id_invalid": "L’identifiant du produit ne peut pas être un GUID vide."
+  "product_id_invalid": "L’identifiant du produit ne peut pas être un GUID vide.",
+  "request_succeeded": "La requête a été effectuée avec succès."
 }

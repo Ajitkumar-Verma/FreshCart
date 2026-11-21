@@ -22,4 +22,5 @@ public static class AppErrorCodes
     public const string ShopIdInvalid = "shop_id_invalid";
     public const string CategoryIdInvalid = "category_id_invalid";
     public const string ProductIdInvalid = "product_id_invalid";
+    public const string RequestSucceeded = "request_succeeded";
 }

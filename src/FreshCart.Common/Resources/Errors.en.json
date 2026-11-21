@@ -18,5 +18,6 @@
   "last_platform_admin": "The last active platform administrator cannot be deactivated.",
   "shop_id_invalid": "Shop ID must not be an empty GUID.",
   "category_id_invalid": "Category ID must not be an empty GUID.",
-  "product_id_invalid": "Product ID must not be an empty GUID."
+  "product_id_invalid": "Product ID must not be an empty GUID.",
+  "request_succeeded": "The request completed successfully."
 }

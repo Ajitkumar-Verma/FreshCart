@@ -28,17 +28,17 @@ public sealed class SuperUsersController(
     /// <response code="500">The server could not complete the request.</response>
     [Authorize(Roles = AppRoles.PlatformAdmin)]
     [HttpPost]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] CreateSuperUserRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await authService.CreatePlatformAdminAsync(request, cancellationToken));
+            return CreateSuccessResponse(await authService.CreatePlatformAdminAsync(request, cancellationToken));
         }
         catch (OperationCanceledException)
         {
@@ -65,11 +65,11 @@ public sealed class SuperUsersController(
     /// <response code="500">The server could not complete bootstrap.</response>
     [AllowAnonymous]
     [HttpPost(ApiRoutes.BootstrapSuperUser)]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Bootstrap(
         [FromBody] CreateSuperUserRequest request,
         [FromHeader(Name = HttpHeaderNames.BootstrapKey)] string? bootstrapKey,
@@ -77,7 +77,7 @@ public sealed class SuperUsersController(
     {
         try
         {
-            return Ok(await authService.BootstrapPlatformAdminAsync(request, bootstrapKey, cancellationToken));
+            return CreateSuccessResponse(await authService.BootstrapPlatformAdminAsync(request, bootstrapKey, cancellationToken));
         }
         catch (OperationCanceledException)
         {

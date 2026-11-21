@@ -26,15 +26,15 @@ public sealed class AuthController(
     /// <response code="500">The server could not complete registration.</response>
     [AllowAnonymous]
     [HttpPost(ApiRoutes.AuthRegister)]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await authService.RegisterAsync(request, cancellationToken));
+            return CreateSuccessResponse(await authService.RegisterAsync(request, cancellationToken));
         }
         catch (OperationCanceledException)
         {
@@ -59,15 +59,15 @@ public sealed class AuthController(
     /// <response code="500">The server could not complete login.</response>
     [AllowAnonymous]
     [HttpPost(ApiRoutes.AuthLogin)]
-    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
         try
         {
-            return Ok(await authService.LoginAsync(request, cancellationToken));
+            return CreateSuccessResponse(await authService.LoginAsync(request, cancellationToken));
         }
         catch (OperationCanceledException)
         {

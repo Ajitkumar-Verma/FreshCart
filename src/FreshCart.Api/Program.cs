@@ -74,13 +74,17 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     {
         var localizer = context.HttpContext.RequestServices.GetRequiredService<IErrorLocalizer>();
         var language = context.HttpContext.Request.Headers[HttpHeaderNames.AcceptLanguage].FirstOrDefault();
-        var response = new FreshCart.Common.Contracts.ApiErrorResponse(
+        const int statusCode = StatusCodes.Status400BadRequest;
+        var response = new FreshCart.Common.Contracts.ApiResponse<object?>(
+            statusCode,
+            false,
             AppErrorCodes.Validation,
             localizer.GetMessage(AppErrorCodes.Validation, language),
+            null,
             context.HttpContext.TraceIdentifier,
             context.HttpContext.Request.Path);
 
-        return new BadRequestObjectResult(response);
+        return new ObjectResult(response) { StatusCode = statusCode };
     };
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -100,6 +104,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             RoleClaimType = TokenClaimNames.Role,
             NameClaimType = TokenClaimNames.Name
         };
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+                await WriteAuthorizationErrorAsync(context.HttpContext, StatusCodes.Status401Unauthorized, AppErrorCodes.Unauthorized);
+            },
+            OnForbidden = async context =>
+            {
+                await WriteAuthorizationErrorAsync(context.HttpContext, StatusCodes.Status403Forbidden, AppErrorCodes.Forbidden);
+            }
+        };
     });
 builder.Services.AddAuthorization(options =>
 {
@@ -118,3 +134,21 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+static async Task WriteAuthorizationErrorAsync(HttpContext context, int statusCode, string errorCode)
+{
+    if (context.Response.HasStarted) return;
+    var localizer = context.RequestServices.GetRequiredService<IErrorLocalizer>();
+    var language = context.Request.Headers[HttpHeaderNames.AcceptLanguage].FirstOrDefault();
+    context.Response.StatusCode = statusCode;
+    await context.Response.WriteAsJsonAsync(
+        new FreshCart.Common.Contracts.ApiResponse<object?>(
+            statusCode,
+            false,
+            errorCode,
+            localizer.GetMessage(errorCode, language),
+            null,
+            context.TraceIdentifier,
+            context.Request.Path),
+        context.RequestAborted);
+}
